@@ -17,7 +17,7 @@ var render = require('../index');
 var request = require('supertest');
 var toa = require('toa');
 
-describe('test/koa-ejs.test.js', function() {
+describe('test/test.js', function() {
   describe('init()', function() {
     var app = toa();
 
@@ -50,7 +50,7 @@ describe('test/koa-ejs.test.js', function() {
       request(app)
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
-        .expect(/<title>koa ejs<\/title>/)
+        .expect(/<title>toa ejs<\/title>/)
         .expect(/server time is: /)
         .expect(/Dead Horse, Jack, Tom/)
         .expect(/dead horse/)
@@ -75,7 +75,7 @@ describe('test/koa-ejs.test.js', function() {
         })(next);
       });
 
-      request(app.listen(7001))
+      request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/Zed Gu/)

@@ -17,7 +17,7 @@ var Thunk = require('thunks')();
 var copy = require('copy-to');
 var ejs = require('ejs');
 
-var readFile = Thunk.thunkify.call(fs, fs.readFile);
+var readFile = Thunk.thunkify(fs.readFile);
 
 /**
  * default render options
@@ -35,13 +35,6 @@ var defaultSettings = {
   writeResp: true
 };
 
-/**
- * merge object source into object target
- * only if target[prop] not exist
- * @param {Object} target
- * @param {Object} source
- * @param {Object} ctx
- */
 function merge(target, source, ctx) {
 
   function evaluate(value, key) {
@@ -60,51 +53,35 @@ function merge(target, source, ctx) {
       tasks.push(evaluate(source[key], key));
     }
     return Thunk.all(tasks);
-  })(function(err) {
-    if (err) throw err;
-    return target;
   });
 }
-
-/**
- * cache the generate package
- * @type {Object}
- */
-var cache = {};
 
 /**
  * set app.context.render
  *
  * usage:
  * ```
- * yield *this.render('user', {name: 'dead_horse'});
+ * return this.render('user', {name: 'dead_horse'});
  * ```
- * @param {Application} app koa application instance
+ * @param {Application} app toa application instance
  * @param {Object} settings user settings
  */
 module.exports = function(app, settings) {
   if (app.context.render) throw new Error('app.context.render is exist!');
   if (!settings || !settings.root) throw new Error('settings.root required');
 
+  var root = path.resolve(process.cwd(), settings.root);
+  var cache = Object.create(null);
+
   copy(defaultSettings).to(settings);
 
-  settings.viewExt = settings.viewExt ? '.' + settings.viewExt.replace(/^\./, '') : '';
+  var viewExt = settings.viewExt ? '.' + settings.viewExt.replace(/^\./, '') : '';
 
   // ejs global options
-  // WARNING: if use koa-ejs in multi server
+  // WARNING: if use toa-ejs in multi server
   // filters will regist in one ejs instance
   for (var name in settings.filters) {
     ejs.filters[name] = settings.filters[name];
-  }
-
-  /**
-   * generate html with ejs function and options
-   * @param {Function} fn ejs compiled function
-   * @param {Object} options
-   * @return {String}
-   */
-  function renderTpl(fn, options) {
-    return options.scope ? fn.call(options.scope, options) : fn(options);
   }
 
   /**
@@ -114,10 +91,10 @@ module.exports = function(app, settings) {
    * @return {String} html
    */
   function render(view, options) {
-    view += settings.viewExt;
-    var viewPath = path.resolve(settings.root, view);
+    view += viewExt;
+    var viewPath = path.join(root, view);
     // get from cache
-    if (settings.cache && cache[viewPath]) return renderTpl(cache[viewPath], options);
+    if (cache[viewPath]) return cache[viewPath].call(options.scope, options);
 
     return readFile(viewPath, 'utf8')(function(err, tpl) {
       if (err) throw err;
@@ -128,9 +105,10 @@ module.exports = function(app, settings) {
         open: settings.open,
         close: settings.close
       });
+
       if (settings.cache) cache[viewPath] = fn;
 
-      return renderTpl(fn, options);
+      return fn.call(options.scope, options);
     });
   }
 
@@ -145,15 +123,14 @@ module.exports = function(app, settings) {
       return render(view, options);
     })(function(err, html) {
       if (err) throw err;
-      var layout = ("layout" in options && options.layout === false) ? false : (options.layout || settings.layout);
-      if (layout) {
-        // if using layout
-        options.body = html;
-        return render(layout, options);
-      }
-      return html;
+      var layout = options.layout === false ? false : (options.layout || settings.layout);
+      if (!layout) return html;
+      // if using layout
+      options.body = html;
+      return render(layout, options);
     })(function(err, html) {
-      var writeResp = ('writeResp' in options && options.writeResp === false) ? false : (options.writeResp || settings.writeResp);
+      if (err) throw err;
+      var writeResp = options.writeResp === false ? false : (options.writeResp || settings.writeResp);
       if (writeResp) {
         //normal operation
         this.type = 'html';
@@ -165,7 +142,7 @@ module.exports = function(app, settings) {
 };
 
 /**
- * Expose ejs
- */
+* Expose ejs
+*/
 
 module.exports.ejs = ejs;

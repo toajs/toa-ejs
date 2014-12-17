@@ -1,4 +1,4 @@
-toa-ejs v1.0.0 [![Build Status](https://travis-ci.org/toajs/toa-ejs.svg)](https://travis-ci.org/toajs/toa-ejs)
+toa-ejs v1.0.1 [![Build Status](https://travis-ci.org/toajs/toa-ejs.svg)](https://travis-ci.org/toajs/toa-ejs)
 ====
 Ejs render module for toa. support all feature of [ejs](https://github.com/visionmedia/ejs).
 
@@ -39,7 +39,7 @@ Or you can checkout the [example](https://github.com/toajs/toa-ejs/tree/master/e
 * viewExt: view file extension, default is `html`.
 * cache: cache compiled function flag.
 * debug: debug flag.
-* locals: global locals, can be function type, `this` in the function is koa's ctx.
+* locals: global locals, can be function type, `this` in the function is toa's ctx.
 * filters: ejs custom filters.
 * open: open flog.
 * close: close floag.
@@ -52,10 +52,10 @@ Also you can set `layout = false;` to close layout.
 ```html
 <html>
 <head>
-<title>koa ejs</title>
+<title>toa ejs</title>
 </head>
 <body>
-<h3>koa ejs</h3>
+<h3>toa ejs</h3>
 <%- body %>
 </body>
 </html>
@@ -94,7 +94,7 @@ var locals = {
   },
   ip: function *() {  // generatorFunction
     yield wait(10);
-    return this.ip; // use this like in koa middleware
+    return this.ip; // use this like in toa middleware
   }
 };
 ```

@@ -39,7 +39,7 @@ describe('test/write-response.test.js', function() {
         })(next);
       });
 
-      request(app.listen(7001))
+      request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/Zed Gu/)
@@ -69,7 +69,7 @@ describe('test/write-response.test.js', function() {
         })(next);
       });
 
-      request(app.listen(7001))
+      request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/Zed Gu/)
