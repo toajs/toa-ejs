@@ -1,7 +1,10 @@
-toa-ejs v1.0.1 [![Build Status](https://travis-ci.org/toajs/toa-ejs.svg)](https://travis-ci.org/toajs/toa-ejs)
+toa-ejs
 ====
-Ejs render module for toa. support all feature of [ejs](https://github.com/visionmedia/ejs).
+Ejs render module for toa. support all feature of [ejs](https://github.com/visionmedia/ejs) v1.0.
 
+[![NPM version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Talk topic][talk-image]][talk-url]
 
 ## [toa](https://github.com/toajs/toa)
 
@@ -51,13 +54,13 @@ Also you can set `layout = false;` to close layout.
 
 ```html
 <html>
-<head>
-<title>toa ejs</title>
-</head>
-<body>
-<h3>toa ejs</h3>
-<%- body %>
-</body>
+  <head>
+    <title>toa ejs</title>
+  </head>
+  <body>
+    <h3>toa ejs</h3>
+    <%- body %>
+  </body>
 </html>
 ```
 
@@ -67,7 +70,7 @@ support ejs default include.
 
 ```html
 <div>
-<% include user.html %>
+  <% include user.html %>
 </div>
 ```
 
@@ -79,7 +82,7 @@ support ejs filters.
 <p><%=: users | map : 'name' | join %></p>
 ```
 
-you can custom filters pass by `settings.filters'
+you can custom filters pass by `settings.filters`.
 
 ### Locals
 
@@ -99,8 +102,15 @@ var locals = {
 };
 ```
 
-
-
 ## License
 
 The MIT License (MIT)
+
+[npm-url]: https://npmjs.org/package/toa-ejs
+[npm-image]: http://img.shields.io/npm/v/toa-ejs.svg
+
+[travis-url]: https://travis-ci.org/toajs/toa-ejs
+[travis-image]: http://img.shields.io/travis/toajs/toa-ejs.svg
+
+[talk-url]: https://guest.talk.ai/rooms/a6a9331024
+[talk-image]: https://img.shields.io/talk/t/a6a9331024.svg
