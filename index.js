@@ -4,11 +4,11 @@
 // **License:** MIT
 
 /**!
- * modified from https://github.com/koajs/ejs
- *
- * Authors:
- *   dead_horse <dead_horse@qq.com> (http://deadhorse.me)
- */
+* modified from https://github.com/koajs/ejs
+*
+* Authors:
+*   dead_horse <dead_horse@qq.com> (http://deadhorse.me)
+*/
 
 var fs = require('fs');
 var path = require('path');
@@ -20,9 +20,9 @@ var ejs = require('ejs');
 var readFile = Thunk.thunkify(fs.readFile);
 
 /**
- * default render options
- * @type {Object}
- */
+* default render options
+* @type {Object}
+*/
 var defaultSettings = {
   cache: true,
   layout: 'layout',
@@ -36,36 +36,30 @@ var defaultSettings = {
 };
 
 function merge(target, source, ctx) {
-
-  function evaluate(value, key) {
-    return Thunk()(function() {
-      return typeof value === 'function' ? value.call(ctx) : value;
-    })(function(err, res) {
-      if (err) throw err;
-      target[key] = res;
-    });
+  for (var key in source) {
+    if (key in target) continue;
+    assignment(source[key], key);
   }
+  return target;
 
-  return Thunk()(function() {
-    var tasks = [];
-    for (var key in source) {
-      if (key in target) continue;
-      tasks.push(evaluate(source[key], key));
-    }
-    return Thunk.all(tasks);
-  });
+  function assignment(value, key) {
+    if (typeof value !== 'function') target[key] = value;
+    else target[key] = function() {
+      return value.apply(ctx, arguments);
+    };
+  }
 }
 
 /**
- * set app.context.render
- *
- * usage:
- * ```
- * return this.render('user', {name: 'dead_horse'});
- * ```
- * @param {Application} app toa application instance
- * @param {Object} settings user settings
- */
+* set app.context.render
+*
+* usage:
+* ```
+* return this.render('user', {name: 'dead_horse'});
+* ```
+* @param {Application} app toa application instance
+* @param {Object} settings user settings
+*/
 module.exports = function(app, settings) {
   if (app.context.render) throw new Error('app.context.render is exist!');
   if (!settings || !settings.root) throw new Error('settings.root required');
@@ -85,11 +79,11 @@ module.exports = function(app, settings) {
   }
 
   /**
-   * generate html with view name and options
-   * @param {String} view
-   * @param {Object} options
-   * @return {String} html
-   */
+  * generate html with view name and options
+  * @param {String} view
+  * @param {Object} options
+  * @return {String} html
+  */
   function render(view, options) {
     view += viewExt;
     var viewPath = path.join(root, view);
@@ -114,11 +108,9 @@ module.exports = function(app, settings) {
 
 
   app.context.render = function(view, options) {
-    // merge global locals to options
-    options = options || {};
+    options = merge(options || {}, settings.locals, this);
 
-    // support generator locals
-    return Thunk.call(this, merge(options, settings.locals, this))(function(err) {
+    return Thunk.call(this)(function(err) {
       if (err) throw err;
       return render(view, options);
     })(function(err, html) {

@@ -86,18 +86,16 @@ you can custom filters pass by `settings.filters`.
 
 ### Locals
 
-pass gobal locals by `settings.locals`, locals can be functions to get dynamic values.
-locals also can be `generatorFunction` or `generator` or `promise` or any other thunkable value, so you can do some async invoke in locals.
+pass gobal locals by `settings.locals`, locals can be functions that can be called in ejs templates.
 
 ```js
 var locals = {
   version: '0.0.1',
-  now: function () {
+  now: function() {
     return new Date();
   },
-  ip: function *() {  // generatorFunction
-    yield wait(10);
-    return this.ip; // use this like in toa middleware
+  __: function() {
+    return this.__.apply(this, arguments); // toa-i18n's `__` method.
   }
 };
 ```

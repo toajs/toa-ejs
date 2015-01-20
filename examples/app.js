@@ -34,9 +34,7 @@ var locals = {
     return new Date();
   },
   ip: function() {
-    return Thunk.call(this, 100)(function() {
-      return this.ip;
-    });
+    return this.ip;
   },
 };
 
