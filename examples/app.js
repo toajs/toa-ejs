@@ -3,25 +3,16 @@
 //
 // **License:** MIT
 
-/**!
-* modified from https://github.com/koajs/ejs
-*
-* Authors:
-*   dead_horse <dead_horse@qq.com> (http://deadhorse.me)
-*/
-
 var toa = require('toa');
-var render = require('../index');
-var path = require('path');
-var Thunk = require('thunks')();
+var toaEjs = require('../index');
 
 var app = toa(function(Thunk) {
   var users = [{
-    name: 'Dead Horse'
+    name: 'Toa 1'
   }, {
-    name: 'Jack'
+    name: 'Toa 2'
   }, {
-    name: 'Tom'
+    name: 'Toa 3'
   }];
   return this.render('content', {
     users: users
@@ -29,7 +20,7 @@ var app = toa(function(Thunk) {
 });
 
 var locals = {
-  version: '0.0.1',
+  version: 'v2.0.0',
   now: function() {
     return new Date();
   },
@@ -38,20 +29,12 @@ var locals = {
   },
 };
 
-var filters = {
-  format: function(time) {
-    return time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
-  }
-};
-
-render(app, {
-  root: path.join(__dirname, 'view'),
+toaEjs(app, {
+  root: 'examples/views',
   layout: 'template',
   viewExt: 'html',
   cache: false,
-  debug: true,
-  locals: locals,
-  filters: filters
+  locals: locals
 });
 
 module.exports = app.listen(3000);

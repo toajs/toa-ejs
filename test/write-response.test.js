@@ -4,12 +4,6 @@
 // **License:** MIT
 
 /*global describe, it, before, after, beforeEach, afterEach*/
-/**!
-* modified from https://github.com/koajs/ejs
-*
-* Authors:
-*   dead_horse <dead_horse@qq.com> (http://deadhorse.me)
-*/
 
 var render = require('..');
 var request = require('supertest');
@@ -20,17 +14,16 @@ describe('test/write-response.test.js', function() {
     it('should return html with default configuration and writeResp option = false', function(done) {
       var app = toa();
       render(app, {
-        root: 'examples/view',
+        root: 'examples/views',
         layout: 'template.oc',
         viewExt: 'html',
-        open: '{{',
-        close: '}}'
+        delimiter: '$'
       });
 
       app.use(function(next) {
         return this.render('user.oc', {
           user: {
-            name: 'Zed Gu'
+            name: 'zensh'
           },
           writeResp: false
         })(function(err, html) {
@@ -42,7 +35,7 @@ describe('test/write-response.test.js', function() {
       request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
-        .expect(/Zed Gu/)
+        .expect(/zensh/)
         .expect(200, done);
 
     });
@@ -50,18 +43,17 @@ describe('test/write-response.test.js', function() {
     it('should return html with configuration writeResp = false', function(done) {
       var app = toa();
       render(app, {
-        root: 'examples/view',
+        root: 'examples/views',
         layout: 'template.oc',
         viewExt: 'html',
-        open: '{{',
-        close: '}}',
+        delimiter: '$',
         writeResp: false
       });
 
       app.use(function(next) {
         return this.render('user.oc', {
           user: {
-            name: 'Zed Gu'
+            name: 'zensh'
           }
         })(function(err, html) {
           this.type = 'html';
@@ -72,9 +64,8 @@ describe('test/write-response.test.js', function() {
       request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
-        .expect(/Zed Gu/)
+        .expect(/zensh/)
         .expect(200, done);
-
     });
   });
 });

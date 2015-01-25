@@ -4,7 +4,7 @@
   "authors": [
     "Yan Qing <admin@zensh.com>"
   ],
-  "version": "1.1.0",
+  "version": "2.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -24,8 +24,7 @@
     "templates"
   ],
   "dependencies": {
-    "copy-to": "^2.0.1",
-    "ejs": "~1.0.0",
+    "ejs": "^2.2.0",
     "thunks": "^2.7.1"
   },
   "devDependencies": {

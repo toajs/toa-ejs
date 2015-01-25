@@ -1,6 +1,6 @@
 toa-ejs
 ====
-Ejs render module for toa. support all feature of [ejs](https://github.com/visionmedia/ejs) v1.0.
+Ejs render module for toa.
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
@@ -8,26 +8,24 @@ Ejs render module for toa. support all feature of [ejs](https://github.com/visio
 
 ## [toa](https://github.com/toajs/toa)
 
-## Usage
+It is a Implementation of v2.x https://github.com/mde/ejs. Checkout [v1.x](https://github.com/toajs/toa-ejs/tree/v1.1.0) for https://github.com/visionmedia/ejs
 
 ### Example
 
 ```js
 var toa = require('toa');
-var render = require('toa-ejs');
+var toaEjs = require('toa-ejs');
 
 var app = toa(function (Thunk) {
-  return this.render('user');
+  return this.render('user', {name: 'toa', age: 1});
 });
 
-render(app, {
-  root: path.join(__dirname, 'view'),
+toaEjs(app, {
+  root: 'views',
   layout: 'template',
   viewExt: 'html',
   cache: false,
-  debug: true,
-  locals: locals,
-  filters: filters
+  locals: locals
 });
 
 app.listen(3000);
@@ -35,17 +33,49 @@ app.listen(3000);
 
 Or you can checkout the [example](https://github.com/toajs/toa-ejs/tree/master/examples).
 
-### settings
+## Installation
 
-* root: view root directory.
-* layout: global layout file, default is `layout`, set `false` to disable layout.
-* viewExt: view file extension, default is `html`.
-* cache: cache compiled function flag.
-* debug: debug flag.
-* locals: global locals, can be function type, `this` in the function is toa's ctx.
-* filters: ejs custom filters.
-* open: open flog.
-* close: close floag.
+```bash
+npm install toa-ejs
+```
+
+## API
+
+  ```js
+  var toaEjs = require('toa-ejs');
+  ```
+### toaEjs(app, options)
+
+It will add `render` method to `context`.
+
+- `options.root`: views root directory, required.
+- `options.layout`: global layout file, default is `layout`, set `false` to disable layout.
+- `options.viewExt`: view file extension, default is `html`.
+- `options.delimiter`: Character to use with angle brackets for open/close, default is `%`.
+- `options.cache`: cache compiled function, default is `true`.
+- `options.debug`: Output generated function body.
+- `options.compileDebug`: When `false` no debug instrumentation is compiled, default is `false`.
+- `options.context`: Template function execution context, default is `null`.
+- `options.locals`: global locals, can be function type, `this` in the function is toa's `context`.
+- `options.writeResp`: Write template to response body, default is `true`.
+
+### context.render(viewName, [data], [options])
+
+return thunk function.
+
+- `options.layout`: global layout file, default is `layout`, set `false` to disable layout.
+- `options.writeResp`: Write template to response body, default is `true`.
+- `options.debug`: Output generated function body.
+- `options.compileDebug`: When `false` no debug instrumentation is compiled, default is `false`.
+
+
+```js
+this.render('user', {name: 'toa', age: 1});
+```
+
+```js
+this.render('user', {name: 'toa', age: 1}, {compileDebug: true});
+```
 
 ### Layouts
 
@@ -64,25 +94,15 @@ Also you can set `layout = false;` to close layout.
 </html>
 ```
 
-### Inlcude
+### Include
 
 support ejs default include.
 
 ```html
 <div>
-  <% include user.html %>
+  <%- include('user/show', {user: user}); %>
 </div>
 ```
-
-### Filters
-
-support ejs filters.
-
-```html
-<p><%=: users | map : 'name' | join %></p>
-```
-
-you can custom filters pass by `settings.filters`.
 
 ### Locals
 
@@ -90,7 +110,7 @@ pass gobal locals by `settings.locals`, locals can be functions that can be call
 
 ```js
 var locals = {
-  version: '0.0.1',
+  version: 'v1.0.0',
   now: function() {
     return new Date();
   },

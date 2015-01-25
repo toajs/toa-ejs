@@ -5,13 +5,6 @@
 
 /*global describe, it, before, after, beforeEach, afterEach*/
 
-/**!
-* modified from https://github.com/koajs/ejs
-*
-* Authors:
-*   dead_horse <dead_horse@qq.com> (http://deadhorse.me)
-*/
-
 var assert = require('assert');
 var render = require('../index');
 var request = require('supertest');
@@ -33,13 +26,8 @@ describe('test/test.js', function() {
     it('should init ok', function() {
       render(app, {
         root: __dirname,
-        filters: {
-          format: function() {}
-        },
-        open: '{{',
-        close: '}}'
+        delimiter: '$'
       });
-      assert(typeof render.ejs.filters.format === 'function');
       assert(typeof app.context.render === 'function');
     });
   });
@@ -52,25 +40,23 @@ describe('test/test.js', function() {
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/<title>toa ejs<\/title>/)
         .expect(/server time is: /)
-        .expect(/Dead Horse, Jack, Tom/)
-        .expect(/dead horse/)
+        .expect(/Toa/)
         .expect(200, done);
     });
 
     it('should render page ok with custom open/close', function(done) {
       var app = toa();
       render(app, {
-        root: 'examples/view',
+        root: 'examples/views',
         layout: 'template.oc',
         viewExt: 'html',
-        open: '{{',
-        close: '}}'
+        delimiter: '$'
       });
 
       app.use(function(next) {
         return this.render('user.oc', {
           user: {
-            name: 'Zed Gu'
+            name: 'zensh'
           }
         })(next);
       });
@@ -78,7 +64,7 @@ describe('test/test.js', function() {
       request(app.listen(3000))
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
-        .expect(/Zed Gu/)
+        .expect(/zensh/)
         .expect(200, done);
     });
   });
