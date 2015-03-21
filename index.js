@@ -46,10 +46,7 @@ module.exports = function(app, settings) {
     options = options || {};
     data = merge(data || {}, settings.locals, this);
 
-    return Thunk.call(this)(function(err) {
-      if (err) throw err;
-      return render(view, data, options);
-    })(function(err, html) {
+    return Thunk.call(this, render(view, data, options))(function(err, html) {
       if (err) throw err;
       var layout = getOption(options, 'layout');
       if (!layout) return html;
