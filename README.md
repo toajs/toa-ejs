@@ -4,7 +4,7 @@ Ejs render module for toa.
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
-[![Talk topic][talk-image]][talk-url]
+[![Downloads][downloads-image]][downloads-url]
 
 ## [toa](https://github.com/toajs/toa)
 
@@ -13,12 +13,12 @@ It is a Implementation of v2.x https://github.com/mde/ejs. Checkout [v1.x](https
 ### Example
 
 ```js
-var toa = require('toa');
-var toaEjs = require('toa-ejs');
+var toa = require('toa')
+var toaEjs = require('toa-ejs')
 
 var app = toa(function (Thunk) {
-  return this.render('user', {name: 'toa', age: 1});
-});
+  return this.render('user', {name: 'toa', age: 1})
+})
 
 toaEjs(app, {
   root: 'views',
@@ -26,9 +26,9 @@ toaEjs(app, {
   viewExt: 'html',
   cache: false,
   locals: locals
-});
+})
 
-app.listen(3000);
+app.listen(3000)
 ```
 
 Or you can checkout the [example](https://github.com/toajs/toa-ejs/tree/master/examples).
@@ -42,7 +42,7 @@ npm install toa-ejs
 ## API
 
   ```js
-  var toaEjs = require('toa-ejs');
+  var toaEjs = require('toa-ejs')
   ```
 ### toaEjs(app, options)
 
@@ -70,11 +70,11 @@ return thunk function.
 
 
 ```js
-this.render('user', {name: 'toa', age: 1});
+this.render('user', {name: 'toa', age: 1})
 ```
 
 ```js
-this.render('user', {name: 'toa', age: 1}, {compileDebug: true});
+this.render('user', {name: 'toa', age: 1}, {compileDebug: true})
 ```
 
 ### Layouts
@@ -112,12 +112,12 @@ pass gobal locals by `settings.locals`, locals can be functions that can be call
 var locals = {
   version: 'v1.0.0',
   now: function() {
-    return new Date();
+    return new Date()
   },
   __: function() {
-    return this.__.apply(this, arguments); // toa-i18n's `__` method.
+    return this.__.apply(this, arguments) // toa-i18n's `__` method.
   }
-};
+}
 ```
 
 ## License
@@ -130,5 +130,5 @@ The MIT License (MIT)
 [travis-url]: https://travis-ci.org/toajs/toa-ejs
 [travis-image]: http://img.shields.io/travis/toajs/toa-ejs.svg
 
-[talk-url]: https://guest.talk.ai/rooms/a6a9331024
-[talk-image]: https://img.shields.io/talk/t/a6a9331024.svg
+[downloads-url]: https://npmjs.org/package/toa-ejs
+[downloads-image]: http://img.shields.io/npm/dm/toa-ejs.svg?style=flat-square
