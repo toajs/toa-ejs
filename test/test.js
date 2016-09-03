@@ -3,18 +3,17 @@
 //
 // **License:** MIT
 
-/*global describe, it */
-
-var assert = require('assert')
-var render = require('../index')
-var request = require('supertest')
+var tman = require('tman')
 var toa = require('toa')
+var assert = require('assert')
+var request = require('supertest')
+var render = require('../index')
 
-describe('test/test.js', function () {
-  describe('init()', function () {
+tman.suite('test/test.js', function () {
+  tman.suite('init()', function () {
     var app = toa()
 
-    it('should throw error if no root', function () {
+    tman.it('should throw error if no root', function () {
       assert.throws(function () {
         render(app)
       })
@@ -23,7 +22,7 @@ describe('test/test.js', function () {
       })
     })
 
-    it('should init ok', function () {
+    tman.it('should init ok', function () {
       render(app, {
         root: __dirname,
         delimiter: '$'
@@ -32,19 +31,19 @@ describe('test/test.js', function () {
     })
   })
 
-  describe('server', function () {
-    it('should render page ok', function (done) {
+  tman.suite('server', function () {
+    tman.it('should render page ok', function () {
       var app = require('../examples/app')
-      request(app)
+      return request(app)
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/<title>toa ejs<\/title>/)
         .expect(/server time is: /)
         .expect(/Toa/)
-        .expect(200, done)
+        .expect(200)
     })
 
-    it('should render page ok with custom open/close', function (done) {
+    tman.it('should render page ok with custom open/close', function () {
       var app = toa()
       render(app, {
         root: 'examples/views',
@@ -61,11 +60,11 @@ describe('test/test.js', function () {
         })(next)
       })
 
-      request(app.listen())
+      return request(app.listen())
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
         .expect(/zensh/)
-        .expect(200, done)
+        .expect(200)
     })
   })
 })
