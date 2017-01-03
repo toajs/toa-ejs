@@ -13,19 +13,19 @@ It is a Implementation of v2.x https://github.com/mde/ejs. Checkout [v1.x](https
 ### Example
 
 ```js
-var toa = require('toa')
-var toaEjs = require('toa-ejs')
+const Toa = require('toa')
+const toaEjs = require('toa-ejs')
 
-var app = toa(function (Thunk) {
-  return this.render('user', {name: 'toa', age: 1})
-})
-
+var app = new Toa()
 toaEjs(app, {
   root: 'views',
   layout: 'template',
   viewExt: 'html',
   cache: false,
   locals: locals
+})
+app.use(function * () {
+  yield this.render('user', {name: 'toa', age: 1})
 })
 
 app.listen(3000)
@@ -41,9 +41,10 @@ npm install toa-ejs
 
 ## API
 
-  ```js
-  var toaEjs = require('toa-ejs')
-  ```
+```js
+const toaEjs = require('toa-ejs')
+```
+
 ### toaEjs(app, options)
 
 It will add `render` method to `context`.
@@ -109,7 +110,7 @@ support ejs default include.
 pass gobal locals by `settings.locals`, locals can be functions that can be called in ejs templates.
 
 ```js
-var locals = {
+const locals = {
   version: 'v1.0.0',
   now: function() {
     return new Date()

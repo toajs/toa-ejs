@@ -3,16 +3,15 @@
 //
 // **License:** MIT
 
-var toa = require('toa')
-var tman = require('tman')
-var assert = require('assert')
-var request = require('supertest')
-var render = require('..')
+const Toa = require('toa')
+const tman = require('tman')
+const request = require('supertest')
+const render = require('..')
 
 tman.suite('test/write-response.test.js', function () {
   tman.suite('writeResp option', function () {
     tman.it('should return html with default configuration and writeResp', function () {
-      var app = toa()
+      const app = new Toa()
       render(app, {
         root: 'examples/views',
         layout: 'template.oc',
@@ -20,17 +19,15 @@ tman.suite('test/write-response.test.js', function () {
         delimiter: '$'
       })
 
-      app.use(function (next) {
-        return this.render('user.oc', {
+      app.use(function * () {
+        let html = yield this.render('user.oc', {
           user: {
             name: 'zensh'
           },
           writeResp: false
-        })(function (err, html) {
-          assert.strictEqual(err, null)
-          this.type = 'html'
-          this.body = html
-        })(next)
+        })
+        this.type = 'html'
+        this.body = html
       })
 
       return request(app.listen())
@@ -41,7 +38,7 @@ tman.suite('test/write-response.test.js', function () {
     })
 
     tman.it('should return html with configuration writeResp = false', function () {
-      var app = toa()
+      const app = new Toa()
       render(app, {
         root: 'examples/views',
         layout: 'template.oc',
@@ -50,16 +47,14 @@ tman.suite('test/write-response.test.js', function () {
         writeResp: false
       })
 
-      app.use(function (next) {
-        return this.render('user.oc', {
+      app.use(function * () {
+        let html = yield this.render('user.oc', {
           user: {
             name: 'zensh'
           }
-        })(function (err, html) {
-          assert.strictEqual(err, null)
-          this.type = 'html'
-          this.body = html
-        })(next)
+        })
+        this.type = 'html'
+        this.body = html
       })
 
       return request(app.listen())

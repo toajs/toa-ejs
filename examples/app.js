@@ -3,23 +3,11 @@
 //
 // **License:** MIT
 
-var toa = require('toa')
-var toaEjs = require('../index')
+const Toa = require('toa')
+const toaEjs = require('../index')
 
-var app = toa(function () {
-  var users = [{
-    name: 'Toa 1'
-  }, {
-    name: 'Toa 2'
-  }, {
-    name: 'Toa 3'
-  }]
-  return this.render('content', {
-    users: users
-  })
-})
-
-var locals = {
+const app = new Toa()
+const locals = {
   version: 'v2.0.0',
   now: function () {
     return new Date()
@@ -35,6 +23,19 @@ toaEjs(app, {
   viewExt: 'html',
   cache: false,
   locals: locals
+})
+
+app.use(function * () {
+  var users = [{
+    name: 'Toa 1'
+  }, {
+    name: 'Toa 2'
+  }, {
+    name: 'Toa 3'
+  }]
+  yield this.render('content', {
+    users: users
+  })
 })
 
 module.exports = app.listen(3000)

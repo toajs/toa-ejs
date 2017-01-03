@@ -3,15 +3,16 @@
 //
 // **License:** MIT
 
-var fs = require('fs')
-var path = require('path')
-var ejs = require('ejs')
+const fs = require('fs')
+const path = require('path')
+const ejs = require('ejs')
+const thunk = require('thunks').thunk
 
 /**
  * default render options
  * @type {Object}
  */
-var defaultSettings = {
+const defaultSettings = {
   layout: 'layout',
   viewExt: 'html',
   delimiter: '%',
@@ -33,25 +34,23 @@ module.exports = function (app, settings) {
   if (app.context.render) throw new Error('app.context.render is exist!')
   if (!settings || !settings.root) throw new Error('settings.root required')
 
-  var root = path.resolve(process.cwd(), settings.root)
-  var cache = Object.create(null)
+  const root = path.resolve(process.cwd(), settings.root)
+  const cache = Object.create(null)
 
   merge(settings, defaultSettings)
-  var viewExt = settings.viewExt ? '.' + settings.viewExt.replace(/^\./, '') : ''
+  const viewExt = settings.viewExt ? '.' + settings.viewExt.replace(/^\./, '') : ''
 
   app.context.render = function (view, data, options) {
     options = options || {}
     data = merge(data || {}, settings.locals, this)
 
-    return this.thunk(render(view, data, options))(function (err, html) {
-      if (err) throw err
-      var layout = getOption(options, 'layout')
+    return thunk.call(this, function * () {
+      let html = yield render(view, data, options)
+      let layout = getOption(options, 'layout')
       if (!layout) return html
       // if using layout
       data.body = html
-      return render(layout, data, options)
-    })(function (err, html) {
-      if (err) throw err
+      html = yield render(layout, data, options)
       if (getOption(options, 'writeResp')) {
         // normal operation
         this.type = 'html'
@@ -68,28 +67,24 @@ module.exports = function (app, settings) {
    * @param {Object} options
    * @return {String} html
    */
-  function render (view, data, options) {
+  function * render (view, data, options) {
     view += viewExt
-    var viewPath = path.join(root, view)
+    let viewPath = path.join(root, view)
     // get from cache
     if (cache[viewPath]) return cache[viewPath].call(options.context || settings.context, data)
 
-    return function (callback) {
-      fs.readFile(viewPath, 'utf8', function (err, tpl) {
-        if (err) return callback(err)
-        var fn = ejs.compile(tpl, {
-          cache: settings.cache,
-          delimiter: settings.delimiter,
-          filename: viewPath,
-          _with: settings._with,
-          debug: getOption(options, 'debug'),
-          compileDebug: getOption(options, 'compileDebug')
-        })
+    let tpl = yield (done) => fs.readFile(viewPath, 'utf8', done)
+    let fn = ejs.compile(tpl, {
+      cache: settings.cache,
+      delimiter: settings.delimiter,
+      filename: viewPath,
+      _with: settings._with,
+      debug: getOption(options, 'debug'),
+      compileDebug: getOption(options, 'compileDebug')
+    })
 
-        if (settings.cache) cache[viewPath] = fn
-        return callback(null, fn.call(options.context || settings.context, data))
-      })
-    }
+    if (settings.cache) cache[viewPath] = fn
+    return fn.call(options.context || settings.context, data)
   }
 
   function getOption (options, name) {
@@ -100,22 +95,17 @@ module.exports = function (app, settings) {
 /**
  * Expose ejs
  */
-
 module.exports.ejs = ejs
 
 function merge (target, source, ctx) {
-  for (var key in source) {
+  const assignment = function (value, key) {
+    if (typeof value !== 'function') target[key] = value
+    else target[key] = () => value.apply(ctx, arguments)
+  }
+
+  for (let key in source) {
     if (key in target) continue
     assignment(source[key], key)
   }
   return target
-
-  function assignment (value, key) {
-    if (typeof value !== 'function') target[key] = value
-    else {
-      target[key] = function () {
-        return value.apply(ctx, arguments)
-      }
-    }
-  }
 }

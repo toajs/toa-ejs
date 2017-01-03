@@ -3,15 +3,15 @@
 //
 // **License:** MIT
 
-var tman = require('tman')
-var toa = require('toa')
-var assert = require('assert')
-var request = require('supertest')
-var render = require('../index')
+const tman = require('tman')
+const Toa = require('toa')
+const assert = require('assert')
+const request = require('supertest')
+const render = require('../index')
 
 tman.suite('test/test.js', function () {
   tman.suite('init()', function () {
-    var app = toa()
+    const app = new Toa()
 
     tman.it('should throw error if no root', function () {
       assert.throws(function () {
@@ -33,7 +33,7 @@ tman.suite('test/test.js', function () {
 
   tman.suite('server', function () {
     tman.it('should render page ok', function () {
-      var app = require('../examples/app')
+      const app = require('../examples/app')
       return request(app)
         .get('/')
         .expect('content-type', 'text/html; charset=utf-8')
@@ -44,7 +44,7 @@ tman.suite('test/test.js', function () {
     })
 
     tman.it('should render page ok with custom open/close', function () {
-      var app = toa()
+      const app = new Toa()
       render(app, {
         root: 'examples/views',
         layout: 'template.oc',
@@ -52,12 +52,12 @@ tman.suite('test/test.js', function () {
         delimiter: '$'
       })
 
-      app.use(function (next) {
-        return this.render('user.oc', {
+      app.use(function * () {
+        yield this.render('user.oc', {
           user: {
             name: 'zensh'
           }
-        })(next)
+        })
       })
 
       return request(app.listen())
