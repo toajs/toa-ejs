@@ -1,5 +1,5 @@
-toa-ejs
-====
+# toa-ejs
+
 Ejs render module for toa.
 
 [![NPM version][npm-image]][npm-url]
@@ -16,7 +16,7 @@ It is a Implementation of v2.x https://github.com/mde/ejs. Checkout [v1.x](https
 const Toa = require('toa')
 const toaEjs = require('toa-ejs')
 
-var app = new Toa()
+const app = new Toa()
 toaEjs(app, {
   root: 'views',
   layout: 'template',
@@ -68,7 +68,6 @@ return thunk function.
 - `options.writeResp`: Write template to response body, default is `true`.
 - `options.debug`: Output generated function body.
 - `options.compileDebug`: When `false` no debug instrumentation is compiled, default is `false`.
-
 
 ```js
 this.render('user', {name: 'toa', age: 1})
